@@ -90,7 +90,11 @@ const io = new Server(server, {
 })
 
 io.on('connection', (socket) => {
-    console.log("new client connected", socket.id)
+    console.log("new client connected", socket.id);
+
+    socket.on('disconnect', () => {
+        console.log('client disconnected', socket.id);
+    })
 })
 
 const PORT = 3001;
