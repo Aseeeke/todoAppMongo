@@ -42,6 +42,7 @@ app.post('/tasks', async (req, res) => {
         date: req.body.date,
     })
     await task.save();
+    io.emit('taskAdded', task);
     res.status(201).json(task)
 
 })
@@ -53,6 +54,7 @@ app.post('/doneTasks', async (req, res) => {
         done: true
     })
     await doneTask.save();
+    io.emit('taskDone', doneTask);
     res.status(200).json(doneTask)
 })
 
@@ -70,13 +72,28 @@ app.delete('/doneTasks/:id', async (req, res) => {
     const id = req.params.id;
     const result = await DoneTask.findByIdAndDelete(id);
     if(result) {
+        io.emit('clearDoneTasks')
         res.status(200).json(result)
     }
     else res.status(404).end()
 })
 
+const http = require('http');
+const server = http.createServer(app);
+
+const {Server} = require('socket.io');
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+    }
+})
+
+io.on('connection', (socket) => {
+    console.log("new client connected", socket.id)
+})
+
 const PORT = 3001;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`)
 })
