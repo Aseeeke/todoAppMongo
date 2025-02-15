@@ -49,6 +49,7 @@ app.post('/tasks', async (req, res) => {
 
 app.post('/doneTasks', async (req, res) => {
     const doneTask = new DoneTask({
+        _id: req.body._id,
         content: req.body.content,
         date: req.body.date,
         done: true
